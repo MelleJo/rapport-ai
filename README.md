@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rapport AI: Financial Advice Assistant
+
+## Project Overview
+
+Rapport AI is an advanced web application built with Next.js that provides comprehensive financial advice and tools. Leveraging cutting-edge AI technologies, the application helps users generate detailed financial reports, transcribe audio inputs, and navigate through various financial domains including mortgages, pensions, and general financial planning.
+
+## Key Features
+
+- **AI-Powered Financial Planning**: 
+  - Generate comprehensive financial planning reports
+  - Analyze financial situations with AI-driven insights
+  - Automated document generation with customizable templates
+  - Smart section enhancement and refinement
+
+- **Multi-Domain Financial Tools**:
+  - Mortgage (Hypotheek) planning and analysis
+  - Pension planning and assessment
+  - General financial advice and planning
+  - Interactive forms with real-time validation
+
+- **Advanced Document Generation**:
+  - Dynamic report generation with standardized templates
+  - Customizable section generation
+  - Name replacement functionality
+  - PDF export capabilities
+
+- **Audio Integration**:
+  - Convert audio inputs to text for comprehensive analysis
+  - Seamless integration of transcribed data into reports
+  - Support for name replacement and context preservation
+  - Real-time audio recording and processing
+
+## Technology Stack
+
+- **Frontend**: Next.js 14
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **State Management**: Zustand
+- **AI Integration**: OpenAI API
+- **Audio Processing**: RecordRTC
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js (v18 or later)
+- npm or yarn
+- OpenAI API Key
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up environment variables in `.env.local`:
+```env
+OPENAI_API_KEY=your_api_key_here
+OPENAI_MODEL=gpt-4-1106-preview  # or your preferred model
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app/`: Application routes and API endpoints
+  - `api/`: Backend API routes for report generation and analysis
+  - Feature-specific pages (financieel, hypotheek, pensioen)
 
-## Learn More
+- `src/components/`: React components
+  - Core components for forms and reports
+  - UI components built with shadcn/ui
+  - Specialized components for audio and document handling
 
-To learn more about Next.js, take a look at the following resources:
+- `src/lib/`: Core utilities
+  - Document generation
+  - OpenAI integration
+  - Standard text templates
+  - Utility functions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `src/types/`: TypeScript definitions
+  - Financial planning types
+  - Customer profile types
+  - Component props and state types
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/prompts/`: AI prompt configurations
+  - Base prompts
+  - Section-specific prompts
+  - Prompt building utilities
 
-## Deploy on Vercel
+## Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Required environment variables in `.env.local`:
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `OPENAI_MODEL`: Preferred OpenAI model (default: gpt-4-1106-preview)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Optional environment variables:
+- `MAX_TOKENS`: Maximum tokens for API responses
+- `TEMPERATURE`: Temperature setting for AI responses
+
+## Features in Detail
+
+### Financial Planning
+- Comprehensive financial situation analysis
+- Custom report generation with AI insights
+- Interactive form with dynamic sections
+- Real-time data validation and processing
+
+### Mortgage Planning
+- Detailed mortgage advice generation
+- Property and financial assessment
+- Custom report templates
+- Interactive mortgage calculator
+
+### Pension Planning
+- Retirement planning analysis
+- Pension gap assessment
+- Future financial projections
+- Customized advice generation
+
+## Deployment
+
+The application is optimized for deployment on Vercel, but can be deployed to any platform supporting Next.js applications.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+[Add your license information here]

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import AudioInput from '@/components/AudioInput'
-import AdviceReport from '@/components/AdviceReport'
+import TranscriptInput from '../../components/TranscriptInput'
+import AdviceReport from '../../components/AdviceReport'
 
 interface Section {
   title: string;
@@ -28,7 +28,6 @@ export default function HypotheekPage() {
         },
         body: JSON.stringify({ 
           transcript: transcriptText,
-          // Note: klantprofiel will be handled separately if needed
         }),
       });
 
@@ -56,7 +55,7 @@ export default function HypotheekPage() {
         <h1 className="text-3xl font-bold mb-6">Hypotheekadvies Generator</h1>
         
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <AudioInput onTranscriptionComplete={handleTranscription} />
+          <TranscriptInput onTranscriptionComplete={handleTranscription} />
         </div>
 
         {error && (

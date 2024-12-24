@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { promises as fs } from 'fs';
-import path from 'path';
-import os from 'os';
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('Missing OPENAI_API_KEY environment variable');
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -10,44 +11,45 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const data = await req.formData();
-    const file = data.get('audio');
+    const formData = await req.formData();
+    const audioFile = formData.get('audio') as File;
     
-    if (!file || !(file instanceof File)) {
+    if (!audioFile) {
       return NextResponse.json(
-        { error: 'No audio file provided or invalid file' },
+        { error: 'No audio file provided' },
         { status: 400 }
       );
     }
 
     // Convert File to Buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const arrayBuffer = await audioFile.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Create file object for OpenAI API
-    const audioFile = new File([buffer], 'audio.webm', { type: file.type });
+    // Create a new File object from the buffer
+    const file = new File([buffer], 'audio.webm', { type: audioFile.type });
 
     try {
-      // Create transcription directly without saving to disk
       const transcription = await openai.audio.transcriptions.create({
         model: "whisper-1",
-        file: audioFile,
+        file: file,
         language: "nl",
         response_format: "text",
       });
 
-      // Since response_format is "text", transcription is directly a string
       return NextResponse.json({ transcript: transcription });
 
     } catch (error) {
       console.error('OpenAI transcription error:', error);
-      throw error;
+      return NextResponse.json(
+        { error: 'Error during transcription' },
+        { status: 500 }
+      );
     }
 
   } catch (error) {
-    console.error('Error in transcription:', error);
+    console.error('Error processing request:', error);
     return NextResponse.json(
-      { error: 'Error processing audio: ' + (error instanceof Error ? error.message : 'Unknown error') },
+      { error: 'Error processing request' },
       { status: 500 }
     );
   }

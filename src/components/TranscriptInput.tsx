@@ -3,20 +3,21 @@
 import { useState } from 'react'
 import AudioRecorder from './AudioRecorder'
 
-interface AudioInputProps {
+interface TranscriptInputProps {
   onTranscriptionComplete: (transcript: string) => void;
 }
 
-export default function AudioInput({ onTranscriptionComplete }: AudioInputProps) {
+export default function TranscriptInput({ onTranscriptionComplete }: TranscriptInputProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [textInput, setTextInput] = useState('');
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('audio/')) {
-      setUploadError('Please upload an audio file');
+      setUploadError('Upload alstublieft een audiobestand');
       return;
     }
 
@@ -32,22 +33,56 @@ export default function AudioInput({ onTranscriptionComplete }: AudioInputProps)
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       if (data.transcript) {
         onTranscriptionComplete(data.transcript);
+      } else {
+        throw new Error('Geen transcriptie ontvangen');
       }
     } catch (error) {
-      setUploadError('Error processing audio file');
+      setUploadError('Fout bij het verwerken van het audiobestand');
       console.error('Error:', error);
     } finally {
       setIsUploading(false);
     }
   };
 
+  const handleTextSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (textInput.trim()) {
+      onTranscriptionComplete(textInput.trim());
+      setTextInput('');
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="border-b pb-4">
-        <h2 className="text-lg font-semibold mb-4">Upload Audio Bestand</h2>
+        <h2 className="text-lg font-semibold mb-4">Optie 1: Type of Plak Tekst</h2>
+        <form onSubmit={handleTextSubmit} className="space-y-4">
+          <textarea
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            placeholder="Plak hier het gespreksverslag..."
+            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <button
+            type="submit"
+            disabled={!textInput.trim()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 
+                     disabled:bg-blue-300 disabled:cursor-not-allowed"
+          >
+            Verwerk Tekst
+          </button>
+        </form>
+      </div>
+
+      <div className="border-b pb-4">
+        <h2 className="text-lg font-semibold mb-4">Optie 2: Upload Audio Bestand</h2>
         <input
           type="file"
           accept="audio/*"
@@ -72,8 +107,8 @@ export default function AudioInput({ onTranscriptionComplete }: AudioInputProps)
         )}
       </div>
 
-      <div className="border-b pb-4">
-        <h2 className="text-lg font-semibold mb-4">Of Neem Direct Op</h2>
+      <div className="pb-4">
+        <h2 className="text-lg font-semibold mb-4">Optie 3: Neem Direct Op</h2>
         <AudioRecorder onTranscriptionComplete={onTranscriptionComplete} />
       </div>
     </div>

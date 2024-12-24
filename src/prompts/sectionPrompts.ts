@@ -97,6 +97,55 @@ export const sectionPrompts = {
     `,
   };
   
+  export const financialPlanningSections = {
+    samenvatting: `
+      Genereer een beknopte samenvatting van het financieel advies die de volgende elementen bevat:
+      - Belangrijkste bevindingen
+      - Kernpunten van het advies
+      - Financiële doelstellingen
+      - Belangrijkste aanbevelingen
+    `,
+    
+    huidigeSituatie: `
+      Analyseer de huidige financiële situatie met focus op:
+      - Netto besteedbaar inkomen
+      - Vaste lasten en uitgavenpatroon
+      - Vermogenspositie
+      - Financiële wensen en doelen
+    `,
+    
+    pensioen: `
+      Analyseer de pensioensituatie met aandacht voor:
+      - Huidige pensioenopbouw
+      - Verwacht pensioeninkomen
+      - Pensioentekort
+      - Aanvullende voorzieningen
+    `,
+    
+    overlijden: `
+      Beoordeel de financiële situatie bij overlijden:
+      - Impact op nabestaanden
+      - Bestaande voorzieningen
+      - Tekorten en risico's
+      - Aanbevolen maatregelen
+    `,
+    
+    arbeidsongeschiktheid: `
+      Analyseer de situatie bij arbeidsongeschiktheid:
+      - Inkomensterugval
+      - Bestaande dekkingen
+      - Werkgeversvoorzieningen
+      - Aanvullende behoeften
+    `,
+    
+    ervenSchenken: `
+      Adviseer over vermogensoverdracht:
+      - Huidige situatie
+      - Wensen en doelstellingen
+      - Fiscale aspecten
+      - Concrete aanbevelingen
+    `
+  };
   // Helper function to get specific section prompt
   export const getSectionPrompt = (section: keyof typeof sectionPrompts): string => {
     return sectionPrompts[section] || '';

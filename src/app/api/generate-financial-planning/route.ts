@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { standardTexts, selectStandardText } from '@/lib/standardTexts';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('Missing OPENAI_API_KEY environment variable');
@@ -8,34 +9,6 @@ if (!process.env.OPENAI_API_KEY) {
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const reportSections = [
-  {
-    title: "Uitwerking huidige situatie",
-    description: "Beschrijf de huidige financiële situatie voor en na het advies",
-    requiredGraphs: ["Grafiek: Netto besteedbaar inkomen - Huidige situatie"]
-  },
-  {
-    title: "Uitwerking financiële situatie later (pensioen)",
-    description: "Analyseer de pensioensituatie voor en na het advies",
-    requiredGraphs: ["Grafiek: Pensioeninkomen", "Grafiek: Vermogensopbouw pensioen"]
-  },
-  {
-    title: "Uitwerking financiële situatie overlijden",
-    description: "Beschrijf de financiële impact bij overlijden voor en na het advies",
-    requiredGraphs: ["Grafiek: Inkomen bij overlijden partner"]
-  },
-  {
-    title: "Uitwerking financiële situatie arbeidsongeschiktheid",
-    description: "Analyseer de financiële situatie bij arbeidsongeschiktheid",
-    requiredGraphs: ["Grafiek: Inkomen bij arbeidsongeschiktheid"]
-  },
-  {
-    title: "Advies over erven en schenken",
-    description: "Geef advies over de mogelijkheden voor erven en schenken",
-    requiredGraphs: []
-  }
-];
 
 export async function POST(req: Request) {
   try {
@@ -50,21 +23,39 @@ export async function POST(req: Request) {
 
     const prompt = `Je bent een ervaren financieel adviseur die een gedetailleerd financieel adviesrapport schrijft op basis van een gespreksverslag.
 
+Je hebt toegang tot standaard tekstblokken die je kunt gebruiken als basis voor je advies. Gebruik deze teksten wanneer van toepassing, maar:
+1. Pas ze alleen toe als ze VOLLEDIG relevant zijn voor de situatie
+2. Pas de teksten aan aan de specifieke situatie van de klant
+3. Vul concrete bedragen en details in waar nodig
+4. Combineer verschillende tekstblokken wanneer logisch
+5. Schrijf eigen tekst wanneer de standaard teksten niet volledig passend zijn
+
+Beschikbare standaard teksten:
+${JSON.stringify(standardTexts, null, 2)}
+
 Gespreksverslag:
 ${transcript}
 
-Genereer een compleet financieel adviesrapport met de volgende structuur. Gebruik de standaardteksten uit het sjabloon waar van toepassing.
+Genereer een compleet financieel adviesrapport met de volgende structuur:
 
-1. Een samenvatting van het advies
+1. Samenvatting van het advies
 2. Voor elk van de volgende secties, genereer een "voor advies" en "na advies" analyse:
-   - Uitwerking huidige situatie
+   - Uitwerking huidige situatie (inclusief NBI)
    - Financiële situatie later (pensioen)
    - Financiële situatie overlijden
    - Financiële situatie arbeidsongeschiktheid
 3. Advies over erven en schenken
-4. Concrete actiepunten voor zowel de cliënt als de adviseur
+4. Concrete actiepunten voor de cliënt en de adviseur
 
-Wanneer je naar grafieken verwijst, gebruik de placeholder [Grafiek: naam] die later vervangen zal worden.
+Belangrijke richtlijnen:
+- Gebruik de standaard tekstblokken waar passend
+- Vul concrete bedragen en percentages in
+- Verwijs naar grafieken met [Grafiek: naam]
+- Wees specifiek in aanbevelingen
+- Gebruik professioneel taalgebruik
+- Kies de juiste tekstblokken op basis van de situatie (zelfstandige/loondienst, wel/geen tekort, etc.)
+
+Let op: de output moet exact de structuur van de standaard teksten volgen waar mogelijk, maar dan met de juiste bedragen en situatie-specifieke details ingevuld.
 
 Antwoord in het volgende JSON formaat:
 {

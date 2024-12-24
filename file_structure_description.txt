@@ -1,0 +1,79 @@
+Root Directory:
+- .gitignore: Specifies files and directories that should be ignored by Git.
+- components.json: Configuration for component libraries.
+- eslint.config.mjs: ESLint configuration for code quality.
+- next.config.ts: Next.js framework configuration.
+- package-lock.json: Exact dependency tree specification.
+- package.json: Project metadata and dependency management.
+- postcss.config.mjs: PostCSS configuration for CSS processing.
+- README.md: Project overview and documentation.
+- tailwind.config.ts: Tailwind CSS utility configuration.
+- tsconfig.json: TypeScript compiler configuration.
+
+Public Directory (public/):
+- Static assets: SVG icons (file.svg, globe.svg, next.svg, vercel.svg, window.svg)
+
+Source Directory (src/):
+- App Directory (src/app/):
+  - Core application routing and page components
+  - favicon.ico: Website icon
+  - globals.css: Global styling
+  - layout.tsx: Main application layout
+  - page.tsx: Root page component
+
+  - API Routes (src/app/api/):
+    - analyze-financial-planning/route.ts: API for analyzing financial planning data
+    - enhance-section/route.ts: API for enhancing report sections
+    - generate-financial-planning/route.ts: API for generating financial planning reports
+    - generate-report/route.ts: API for generating comprehensive financial reports
+    - generate-sections/route.ts: API for generating individual report sections
+    - transcribe/route.ts: API for audio transcription
+
+  - Feature Pages:
+    - financieel/page.tsx: Financial overview page
+    - hypotheek/page.tsx: Mortgage-specific page
+    - pensioen/page.tsx: Pension-specific page
+    - routes/hypotheek/page.tsx: Alternative routing for mortgage information
+
+- Components Directory (src/components/):
+  - AdviceReport.tsx: Component for displaying generated financial advice
+  - AudioRecorder.tsx: Audio recording functionality
+  - BlockEditor.tsx: Advanced text editing component
+  - FinancialPlanningForm.tsx: Form for financial planning input
+  - FinancialPlanningReport.tsx: Display component for financial planning reports
+  - HypotheekForm.tsx: Mortgage information input form
+  - NameReplacer.tsx: Name replacement utility component
+  - ReportDisplay.tsx: Rendering of generated reports
+  - TranscriptInput.tsx: Input and management of transcribed text
+  
+  - UI Components (src/components/ui/):
+    - alert.tsx: Reusable alert component
+    - button.tsx: Customized button component
+    - card.tsx: Card container component
+    - dialog.tsx: Reusable dialog component
+    - DownloadButton.tsx: Specialized button for downloads
+    - LoadingSpinner.tsx: Loading state indicator
+
+- Library Directory (src/lib/):
+  - documentGenerator.ts: Document generation utilities
+  - openai.ts: OpenAI API integration
+  - standardTexts.ts: Standard text templates
+  - utils.ts: General utility functions
+
+- Prompts Directory (src/prompts/):
+  - basePrompt.ts: Base AI prompt configuration
+  - index.ts: Prompt module exports
+  - sectionPrompts.ts: Specific prompts for report sections
+
+- Stores Directory (src/stores/):
+  - useAppStore.ts: Global state management using Zustand
+
+- Types Directory (src/types/):
+  - FinancialPlanning.ts: Financial planning type definitions
+  - klantProfiel.ts: Customer profile type definitions
+  - recordrtc.d.ts: RecordRTC type declarations
+  - Section.ts: Report section type definitions
+  - Transcript.ts: Transcription-related type definitions
+
+- Utils Directory (src/utils/):
+  - promptBuilder.ts: Utility for constructing AI prompts

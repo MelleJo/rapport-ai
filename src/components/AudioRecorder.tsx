@@ -14,11 +14,13 @@ export default function AudioRecorder({ onTranscriptionComplete }: AudioRecorder
   const recorderRef = useRef<RecordRTC | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Cleanup function for audio URL
   useEffect(() => {
     return () => {
       if (audioUrl && typeof URL !== 'undefined') {
         URL.revokeObjectURL(audioUrl);
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
   }, [audioUrl]);
@@ -30,7 +32,7 @@ export default function AudioRecorder({ onTranscriptionComplete }: AudioRecorder
       recorderRef.current = new RecordRTC(stream, {
         type: 'audio',
         mimeType: 'audio/webm',
-        recorderType: RecordRTC,
+        recorderType: RecordRTC.StereoAudioRecorder,
       });
       
       recorderRef.current.startRecording();
@@ -44,13 +46,11 @@ export default function AudioRecorder({ onTranscriptionComplete }: AudioRecorder
     if (recorderRef.current) {
       recorderRef.current.stopRecording(() => {
         const blob = recorderRef.current!.getBlob();
-        // Only create URL if available
         if (typeof URL !== 'undefined') {
           const url = URL.createObjectURL(blob);
           setAudioUrl(url);
         }
         setIsRecording(false);
-        // Stop all tracks in the stream
         if (streamRef.current) {
           streamRef.current.getTracks().forEach(track => track.stop());
         }
@@ -64,7 +64,6 @@ export default function AudioRecorder({ onTranscriptionComplete }: AudioRecorder
     
     try {
       const formData = new FormData();
-      // Create a File object from the Blob
       const file = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
       formData.append('audio', file);
 
