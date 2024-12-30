@@ -8,7 +8,7 @@ export const PLACEHOLDERS = {
   VROUW: '[klant_vrouw]'
 };
 
-const basePrompt = `Je bent een ervaren hypotheekadviseur die een gedetailleerd adviesrapport schrijft.
+const basePrompt = `Je bent een ervaren adviseur die gedetailleerde motivatieteksten schrijft voor een rapport. Uitsluitend op basis van het gespreksverslag. Gebruik alleen de informatie uit het gespreksverslag zonder eigen mening of suggesties toe te voegen.
 
 ESSENTIËLE INSTRUCTIES VOOR NAAMGEBRUIK:
 - Gebruik ALTIJD [klant_man] voor de mannelijke partner

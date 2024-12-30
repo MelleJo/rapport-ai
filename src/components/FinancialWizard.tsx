@@ -1,80 +1,108 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, ArrowLeft, FileText, Mic, Upload } from 'lucide-react';
 import TranscriptInput from './TranscriptInput';
-import AdviceReport from './AdviceReport';
-import ChatInterface from './ChatInterface';
+import FinancialPlanningReport from './FinancialPlanningReport';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface Section {
-  title: string;
-  content: string;
+interface AnalysisResult {
+  missingInformation: string[];
+  complete: boolean;
+  context?: string;
 }
 
 const steps = [
   {
-    title: "Gesprek Invoeren",
+    title: "Gesprek invoeren",
     description: "Voer het adviesgesprek in via tekst, audio of upload"
   },
   {
-    title: "Analyse Gesprek",
-    description: "AI analyseert het gesprek en vraagt ontbrekende informatie"
+    title: "Rapport analyseren",
+    description: "Het systeem analyseert de benodigde informatie"
   },
   {
-    title: "Rapport Genereren",
+    title: "Rapport genereren",
     description: "Het systeem genereert het adviesrapport"
   },
   {
-    title: "Rapport Aanpassen",
+    title: "Rapport aanpassen",
     description: "Pas het gegenereerde rapport aan indien nodig"
   }
 ];
 
-export default function HypotheekWizard() {
+export default function FinancialWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [transcript, setTranscript] = useState<string | null>(null);
-  const [sections, setSections] = useState<Section[]>([]);
+  const [report, setReport] = useState<any | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleTranscription = async (transcriptText: string) => {
+const handleTranscription = async (transcriptText: string) => {
+  console.log('Transcription started with:', transcriptText);
+    console.log('Setting transcript:', transcriptText);
     setTranscript(transcriptText);
-    setCurrentStep(1); // Move to chat analysis step
-  };
-
-  const handleChatComplete = async () => {
     setIsProcessing(true);
     setError(null);
+    setCurrentStep(1); // Move to analysis step
 
     try {
-      const response = await fetch('/api/generate-sections', {
+      // First, analyze for missing information
+      console.log('Analyzing transcript...');
+      const analysisResponse = await fetch('/api/analyze-financial-planning', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          transcript: transcript,
-        }),
+        body: JSON.stringify({ transcript: transcriptText }),
+      });
+
+      const analysisData = await analysisResponse.json();
+      console.log('Analysis result:', analysisData);
+      setAnalysisData(analysisData);
+
+      // Commenting out the check for missing information to proceed with report generation
+      // if (analysisData.missingInformation && analysisData.missingInformation.length > 0) {
+      //   setCurrentStep(1); // Stay on analysis step
+      //   return;
+      // }
+
+      setCurrentStep(2); // Move to generation step
+
+      // Generate the report
+      console.log('Generating report...');
+      const response = await fetch('/api/generate-financial-planning', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transcript: transcriptText }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error('Failed to generate report');
       }
 
       const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      setSections(data.sections);
+      console.log('Generated report:', data);
+      setReport(data.report);
       setCurrentStep(3); // Move to report step
     } catch (error) {
-      console.error('Error generating sections:', error);
+      console.error('Error during transcription:', error);
       setError(error instanceof Error ? error.message : 'Er is een fout opgetreden');
+      setCurrentStep(0);
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleAdditionalInfo = async (additionalTranscript: string) => {
+    if (!transcript) return;
+    const combinedTranscript = `${transcript}\n\nAanvullende informatie:\n${additionalTranscript}`;
+    setTranscript(combinedTranscript);
+    handleTranscription(combinedTranscript);
   };
 
   const renderStepContent = () => {
@@ -89,19 +117,54 @@ export default function HypotheekWizard() {
             <TranscriptInput onTranscriptionComplete={handleTranscription} />
           </motion.div>
         );
+
       case 1:
         return (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
           >
-            <ChatInterface
-              transcript={transcript || ''}
-              onComplete={handleChatComplete}
-            />
+            {analysisData?.missingInformation && analysisData.missingInformation.length > 0 && (
+              <Alert className="bg-yellow-50 border-yellow-200">
+                <AlertDescription>
+                  <div className="space-y-2">
+                    <p className="font-medium">De volgende informatie ontbreekt nog:</p>
+                    <ul className="list-disc pl-4">
+                      {analysisData.missingInformation.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                    {analysisData.context && (
+                      <p className="mt-2 text-sm text-gray-600 italic">
+                        {analysisData.context}
+                      </p>
+                    )}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Aanvullende informatie</h3>
+                  <TranscriptInput onTranscriptionComplete={handleAdditionalInfo} />
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleTranscription(transcript || '')}
+                    >
+                      Doorgaan zonder aanvulling
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         );
+
       case 2:
         return (
           <motion.div
@@ -111,9 +174,11 @@ export default function HypotheekWizard() {
             className="flex flex-col items-center justify-center py-12"
           >
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-lg text-gray-600">Adviesrapport genereren...</p>
+            <p className="mt-4 text-lg text-gray-600">Financieel adviesrapport genereren...</p>
+            <p className="mt-2 text-sm text-gray-500">Dit kan enkele momenten duren</p>
           </motion.div>
         );
+
       case 3:
         return (
           <motion.div
@@ -121,9 +186,10 @@ export default function HypotheekWizard() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
-            <AdviceReport sections={sections} />
+            <FinancialPlanningReport report={report} />
           </motion.div>
         );
+
       default:
         return null;
     }
@@ -132,7 +198,7 @@ export default function HypotheekWizard() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Hypotheekadvies Generator</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Financieel advies generator</h1>
         <div className="flex justify-between items-center mb-8">
           {steps.map((step, index) => (
             <div key={index} className="flex-1">

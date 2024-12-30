@@ -1,3 +1,6 @@
+// src/components/ui/dialog.tsx
+'use client'
+
 interface DialogProps {
   isOpen: boolean;
   onClose: () => void;

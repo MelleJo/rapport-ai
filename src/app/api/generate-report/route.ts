@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const prompt = `Je bent een ervaren financieel adviseur die een gedetailleerd financieel adviesrapport schrijft op basis van een gespreksverslag.
+const prompt = `Je bent een ervaren financieel adviseur die een gedetailleerd financieel adviesrapport schrijft uitsluitend op basis van het gespreksverslag. Gebruik alleen de informatie uit het gespreksverslag zonder eigen mening of suggesties toe te voegen.
 
 Gespreksverslag:
 ${transcript}
@@ -83,7 +83,7 @@ Antwoord in het volgende JSON formaat:
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "gpt-4o",
-      temperature: 0.7,
+      temperature: 0.5,
       response_format: { type: "json_object" }
     });
 

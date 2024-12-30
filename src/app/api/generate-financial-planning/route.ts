@@ -74,7 +74,7 @@ Antwoord in het volgende JSON formaat:
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "gpt-4o",
-      temperature: 0.7,
+      temperature: 0.5,
       response_format: { type: "json_object" }
     });
 

@@ -11,18 +11,20 @@ Rapport AI is an advanced web application built with Next.js that provides compr
   - Analyze financial situations with AI-driven insights
   - Automated document generation with customizable templates
   - Smart section enhancement and refinement
+  - Interactive wizard interface for guided planning
 
 - **Multi-Domain Financial Tools**:
-  - Mortgage (Hypotheek) planning and analysis
+  - Mortgage (Hypotheek) planning and analysis with step-by-step wizard
   - Pension planning and assessment
   - General financial advice and planning
   - Interactive forms with real-time validation
 
 - **Advanced Document Generation**:
   - Dynamic report generation with standardized templates
-  - Customizable section generation
-  - Name replacement functionality
+  - Customizable section generation and enhancement
+  - Name replacement functionality for personalization
   - PDF export capabilities
+  - Block-based editing for fine-tuned control
 
 - **Audio Integration**:
   - Convert audio inputs to text for comprehensive analysis
@@ -32,12 +34,12 @@ Rapport AI is an advanced web application built with Next.js that provides compr
 
 ## Technology Stack
 
-- **Frontend**: Next.js 14
+- **Frontend**: Next.js 14 with App Router
 - **Styling**: Tailwind CSS with shadcn/ui components
-- **State Management**: Zustand
-- **AI Integration**: OpenAI API
-- **Audio Processing**: RecordRTC
-- **Language**: TypeScript
+- **State Management**: Zustand with persistent storage and hydration
+- **AI Integration**: OpenAI API with GPT-4
+- **Audio Processing**: RecordRTC for voice recording and transcription
+- **Language**: TypeScript with strict type checking
 
 ## Getting Started
 
@@ -60,7 +62,7 @@ yarn install
 3. Set up environment variables in `.env.local`:
 ```env
 OPENAI_API_KEY=your_api_key_here
-OPENAI_MODEL=gpt-4-1106-preview  # or your preferred model
+OPENAI_MODEL=gpt-4
 ```
 
 4. Run the development server:
@@ -75,27 +77,41 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Project Structure
 
 - `src/app/`: Application routes and API endpoints
-  - `api/`: Backend API routes for report generation and analysis
+  - `api/`: Backend API routes for report generation, analysis, and transcription
   - Feature-specific pages (financieel, hypotheek, pensioen)
+  - Core layout and global styles
 
 - `src/components/`: React components
-  - Core components for forms and reports
+  - Wizard interfaces (FinancialWizard.tsx, HypotheekWizard.tsx)
+  - Form components (FinancialPlanningForm.tsx, HypotheekForm.tsx)
+  - Report components (AdviceReport.tsx, FinancialPlanningReport.tsx)
+  - Navigation and routing (Navigation.tsx, NavigationManager.tsx)
+  - Audio handling (AudioRecorder.tsx, TranscriptInput.tsx)
   - UI components built with shadcn/ui
-  - Specialized components for audio and document handling
+  - State hydration (StoreHydration.tsx)
 
 - `src/lib/`: Core utilities
-  - Document generation
-  - OpenAI integration
-  - Standard text templates
-  - Utility functions
+  - Document generation (documentGenerator.ts)
+  - OpenAI integration (openai.ts)
+  - Standard text templates (standardTexts.ts)
+  - Utility functions (utils.ts)
+
+- `src/stores/`: State Management
+  - Customer data (useCustomerStore.ts)
+  - Navigation state (useNavigationStore.ts)
+  - Report data (UseReportStore.ts)
+  - Transcript management (UseTranscriptStore.ts)
+  - Global state hydration (StoreHydration.tsx)
 
 - `src/types/`: TypeScript definitions
-  - Financial planning types
-  - Customer profile types
-  - Component props and state types
+  - Financial planning types (FinancialPlanning.ts)
+  - Customer profile types (klantProfiel.ts)
+  - Section definitions (Section.ts)
+  - Transcript types (Transcript.ts)
+  - RecordRTC types (recordrtc.d.ts)
 
 - `src/prompts/`: AI prompt configurations
-  - Base prompts
+  - Base prompts and templates
   - Section-specific prompts
   - Prompt building utilities
 
@@ -103,31 +119,44 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 Required environment variables in `.env.local`:
 - `OPENAI_API_KEY`: Your OpenAI API key
-- `OPENAI_MODEL`: Preferred OpenAI model (default: gpt-4-1106-preview)
+- `OPENAI_MODEL`: Preferred OpenAI model (default: gpt-4)
 
 Optional environment variables:
-- `MAX_TOKENS`: Maximum tokens for API responses
-- `TEMPERATURE`: Temperature setting for AI responses
+- `MAX_TOKENS`: Maximum tokens for API responses (default: 4000)
+- `TEMPERATURE`: Temperature setting for AI responses (default: 0.7)
 
 ## Features in Detail
 
-### Financial Planning
-- Comprehensive financial situation analysis
-- Custom report generation with AI insights
-- Interactive form with dynamic sections
-- Real-time data validation and processing
+### Financial Planning Wizard
+- Step-by-step guided financial planning process
+- Interactive forms with real-time validation
+- AI-powered analysis and recommendations
+- Dynamic report generation with customizable sections
 
 ### Mortgage Planning
-- Detailed mortgage advice generation
+- Comprehensive mortgage advice wizard
 - Property and financial assessment
-- Custom report templates
-- Interactive mortgage calculator
+- Custom report templates with AI enhancement
+- Interactive mortgage calculator and analysis
 
 ### Pension Planning
 - Retirement planning analysis
 - Pension gap assessment
 - Future financial projections
 - Customized advice generation
+
+### Document Generation
+- AI-enhanced report sections
+- Block-based editing capabilities
+- Name replacement for personalization
+- PDF export functionality
+- Standard text template integration
+
+### Audio Processing
+- Real-time audio recording
+- Automatic transcription
+- Integration with report generation
+- Context-aware processing
 
 ## Deployment
 

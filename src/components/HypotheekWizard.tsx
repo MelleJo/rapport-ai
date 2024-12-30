@@ -1,25 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, ArrowLeft, FileText, Mic, Upload } from 'lucide-react';
 import TranscriptInput from './TranscriptInput';
 import AdviceReport from './AdviceReport';
-import ChatInterface from './ChatInterface';
-
-interface Section {
-  title: string;
-  content: string;
-}
+import type { Section } from '@/types/Section';
 
 const steps = [
   {
     title: "Gesprek Invoeren",
     description: "Voer het adviesgesprek in via tekst, audio of upload"
-  },
-  {
-    title: "Analyse Gesprek",
-    description: "AI analyseert het gesprek en vraagt ontbrekende informatie"
   },
   {
     title: "Rapport Genereren",
@@ -40,12 +31,9 @@ export default function HypotheekWizard() {
 
   const handleTranscription = async (transcriptText: string) => {
     setTranscript(transcriptText);
-    setCurrentStep(1); // Move to chat analysis step
-  };
-
-  const handleChatComplete = async () => {
     setIsProcessing(true);
     setError(null);
+    setCurrentStep(1); // Move to processing step
 
     try {
       const response = await fetch('/api/generate-sections', {
@@ -54,7 +42,7 @@ export default function HypotheekWizard() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          transcript: transcript,
+          transcript: transcriptText,
         }),
       });
 
@@ -68,10 +56,11 @@ export default function HypotheekWizard() {
       }
       
       setSections(data.sections);
-      setCurrentStep(3); // Move to report step
+      setCurrentStep(2); // Move to report step
     } catch (error) {
       console.error('Error generating sections:', error);
       setError(error instanceof Error ? error.message : 'Er is een fout opgetreden');
+      setCurrentStep(0); // Return to input step on error
     } finally {
       setIsProcessing(false);
     }
@@ -95,26 +84,14 @@ export default function HypotheekWizard() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-          >
-            <ChatInterface
-              transcript={transcript || ''}
-              onComplete={handleChatComplete}
-            />
-          </motion.div>
-        );
-      case 2:
-        return (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
             className="flex flex-col items-center justify-center py-12"
           >
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
             <p className="mt-4 text-lg text-gray-600">Adviesrapport genereren...</p>
+            <p className="mt-2 text-sm text-gray-500">Dit kan enkele momenten duren</p>
           </motion.div>
         );
-      case 3:
+      case 2:
         return (
           <motion.div
             initial={{ opacity: 0, x: 20 }}

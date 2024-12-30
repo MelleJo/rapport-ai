@@ -1,7 +1,7 @@
-'use client';
+// src/components/NameReplacer.tsx
+'use client'
 
 import { useState } from 'react';
-import { PLACEHOLDERS } from '@/utils/promptBuilder';
 import Dialog from './ui/dialog';
 
 interface NameReplacerProps {
@@ -37,7 +37,7 @@ export default function NameReplacer({ onReplace }: NameReplacerProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Mannelijke Partner ({PLACEHOLDERS.MAN})
+              Mannelijke Partner ([klant_man])
             </label>
             <input
               type="text"
@@ -51,7 +51,7 @@ export default function NameReplacer({ onReplace }: NameReplacerProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Vrouwelijke Partner ({PLACEHOLDERS.VROUW})
+              Vrouwelijke Partner ([klant_vrouw])
             </label>
             <input
               type="text"

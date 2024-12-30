@@ -1,9 +1,12 @@
+// src/components/FinancialPlanningReport.tsx
 'use client'
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card } from '@/components/ui/card';
 import BlockEditor from '@/components/BlockEditor';
 import DownloadButton from '@/components/ui/DownloadButton';
+import { useCustomerStore } from '@/stores';
+import NameReplacer from '@/components/NameReplacer';
 
 interface ReportSection {
   title: string;
@@ -23,12 +26,12 @@ interface FinancialPlanningReportProps {
 }
 
 export default function FinancialPlanningReport({ report: initialReport }: FinancialPlanningReportProps) {
-  const [report, setReport] = useState(initialReport);
+  const [report, setReport] = React.useState(initialReport);
+  const { malePartner, femalePartner, setPartnerNames } = useCustomerStore();
 
   const copyToClipboard = async (text: string) => {
     try {
-      // Format the text for copying - replace graph placeholders with proper format
-      const formattedText = text.replace(/\[Grafiek: (.*?)\]/g, '\n[GRAFIEK: $1]\n');
+      const formattedText = replaceNames(text.replace(/\[Grafiek: (.*?)\]/g, '\n[GRAFIEK: $1]\n'));
       await navigator.clipboard.writeText(formattedText);
     } catch (err) {
       console.error('Failed to copy text:', err);
@@ -55,6 +58,12 @@ export default function FinancialPlanningReport({ report: initialReport }: Finan
     setReport({ ...report, actiepuntenAdviseur: newPoints });
   };
 
+  const replaceNames = (content: string): string => {
+    return content
+      .replace(/\[klant_man\]/g, malePartner)
+      .replace(/\[klant_vrouw\]/g, femalePartner);
+  };
+
   const copyFullReport = () => {
     const fullReport = `# Financieel Advies Rapport
 
@@ -79,7 +88,7 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
   const renderContent = (content: string) => {
     return content.split('\n').map((paragraph, index) => (
       <p key={index} className="mb-4">
-        {paragraph}
+        {replaceNames(paragraph)}
       </p>
     ));
   };
@@ -97,6 +106,7 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Financieel Advies Rapport</h2>
         <div className="flex gap-2">
+          <NameReplacer onReplace={setPartnerNames} />
           <DownloadButton 
             report={report} 
             type="financial-planning"
@@ -110,7 +120,6 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
         </div>
       </div>
 
-      {/* Samenvatting */}
       <Card className="p-6 relative">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Samenvatting van het advies</h3>
@@ -132,7 +141,6 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
         />
       </Card>
 
-      {/* Main Sections */}
       {report.sections.map((section, index) => (
         <Card key={index} className="p-6 relative">
           <div className="flex justify-between items-center mb-4">
@@ -161,7 +169,6 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
         </Card>
       ))}
 
-      {/* Action Points */}
       <Card className="p-6 relative">
         <h3 className="text-xl font-semibold mb-4">Actiepunten</h3>
         
@@ -179,7 +186,7 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
             </div>
             <ul className="list-disc pl-6 space-y-2">
               {report.actiepuntenClient.map((point, index) => (
-                <li key={index}>{point}</li>
+                <li key={index}>{replaceNames(point)}</li>
               ))}
             </ul>
             <BlockEditor
@@ -202,7 +209,7 @@ ${report.actiepuntenAdviseur.map(point => `- ${point}`).join('\n')}`;
             </div>
             <ul className="list-disc pl-6 space-y-2">
               {report.actiepuntenAdviseur.map((point, index) => (
-                <li key={index}>{point}</li>
+                <li key={index}>{replaceNames(point)}</li>
               ))}
             </ul>
             <BlockEditor

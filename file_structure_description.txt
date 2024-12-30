@@ -41,9 +41,14 @@ Source Directory (src/):
   - BlockEditor.tsx: Advanced text editing component
   - FinancialPlanningForm.tsx: Form for financial planning input
   - FinancialPlanningReport.tsx: Display component for financial planning reports
+  - FinancialWizard.tsx: Wizard interface for financial planning process
   - HypotheekForm.tsx: Mortgage information input form
+  - HypotheekWizard.tsx: Step-by-step wizard for mortgage advice
   - NameReplacer.tsx: Name replacement utility component
+  - Navigation.tsx: Main navigation component
+  - NavigationManager.tsx: Navigation state and logic management
   - ReportDisplay.tsx: Rendering of generated reports
+  - StoreHydration.tsx: Global state hydration management
   - TranscriptInput.tsx: Input and management of transcribed text
   
   - UI Components (src/components/ui/):
@@ -53,6 +58,8 @@ Source Directory (src/):
     - dialog.tsx: Reusable dialog component
     - DownloadButton.tsx: Specialized button for downloads
     - LoadingSpinner.tsx: Loading state indicator
+    - tabs.tsx: Tab navigation component
+    - textarea.tsx: Enhanced textarea input component
 
 - Library Directory (src/lib/):
   - documentGenerator.ts: Document generation utilities
@@ -66,7 +73,13 @@ Source Directory (src/):
   - sectionPrompts.ts: Specific prompts for report sections
 
 - Stores Directory (src/stores/):
-  - useAppStore.ts: Global state management using Zustand
+  - index.ts: Store exports
+  - StoreHydration.tsx: Store hydration component
+  - useAppStore.ts: Global application state
+  - useCustomerStore.ts: Customer data management
+  - useNavigationStore.ts: Navigation state management
+  - UseReportStore.ts: Report data management
+  - UseTranscriptStore.ts: Transcript data management
 
 - Types Directory (src/types/):
   - FinancialPlanning.ts: Financial planning type definitions

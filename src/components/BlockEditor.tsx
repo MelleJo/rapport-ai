@@ -9,8 +9,22 @@ interface BlockEditorProps {
   title: string;
 }
 
+import { useCustomerStore } from '../stores/useCustomerStore';
+
 export default function BlockEditor({ content, onUpdate, title }: BlockEditorProps) {
+  const { malePartner, femalePartner } = useCustomerStore();
   const [isOpen, setIsOpen] = useState(false);
+  
+  const getDisplayContent = (content: string): string => {
+    // Remove duplicate unformatted content at the start
+    let processedContent = content;
+    if (content.startsWith('Algemeen\nKopieer Sectie\nAlgemeen\n')) {
+      processedContent = content.substring(content.indexOf('## Algemeen'));
+    }
+    return processedContent
+      .replace(/\[klant_man\]/g, malePartner)
+      .replace(/\[klant_vrouw\]/g, femalePartner);
+  };
   const [instruction, setInstruction] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

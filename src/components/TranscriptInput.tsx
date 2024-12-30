@@ -1,7 +1,11 @@
-'use client'
-
-import { useState } from 'react'
-import AudioRecorder from './AudioRecorder'
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Textarea } from './ui/textarea';
+import { FileText, Upload, Mic } from 'lucide-react';
+import AudioRecorder from './AudioRecorder';
 
 interface TranscriptInputProps {
   onTranscriptionComplete: (transcript: string) => void;
@@ -60,57 +64,94 @@ export default function TranscriptInput({ onTranscriptionComplete }: TranscriptI
   };
 
   return (
-    <div className="space-y-8">
-      <div className="border-b pb-4">
-        <h2 className="text-lg font-semibold mb-4">Optie 1: Type of Plak Tekst</h2>
-        <form onSubmit={handleTextSubmit} className="space-y-4">
-          <textarea
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-            placeholder="Plak hier het gespreksverslag..."
-            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            type="submit"
-            disabled={!textInput.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 
-                     disabled:bg-blue-300 disabled:cursor-not-allowed"
-          >
-            Verwerk Tekst
-          </button>
-        </form>
-      </div>
+    <Tabs defaultValue="text" className="w-full">
+      <TabsList className="grid grid-cols-3 w-full max-w-2xl mx-auto mb-6">
+        <TabsTrigger value="text" className="flex items-center gap-2">
+          <FileText className="w-4 h-4" />
+          <span>Type of plak tekst</span>
+        </TabsTrigger>
+        <TabsTrigger value="upload" className="flex items-center gap-2">
+          <Upload className="w-4 h-4" />
+          <span>Upload audio</span>
+        </TabsTrigger>
+        <TabsTrigger value="record" className="flex items-center gap-2">
+          <Mic className="w-4 h-4" />
+          <span>Neem direct op</span>
+        </TabsTrigger>
+      </TabsList>
 
-      <div className="border-b pb-4">
-        <h2 className="text-lg font-semibold mb-4">Optie 2: Upload Audio Bestand</h2>
-        <input
-          type="file"
-          accept="audio/*"
-          onChange={handleFileUpload}
-          className="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
-            file:text-sm file:font-semibold
-            file:bg-blue-50 file:text-blue-700
-            hover:file:bg-blue-100"
-        />
-        {isUploading && (
-          <div className="mt-2 flex items-center text-sm text-gray-600">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-            Bestand uploaden en transcriberen...
-          </div>
-        )}
-        {uploadError && (
-          <div className="mt-2 text-sm text-red-600">
-            {uploadError}
-          </div>
-        )}
-      </div>
+      <div className="mt-6">
+        <TabsContent value="text">
+          <Card>
+            <CardContent className="pt-6">
+              <form onSubmit={handleTextSubmit} className="space-y-4">
+                <Textarea
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder="Plak hier het gespreksverslag..."
+                  className="min-h-[200px] p-4 text-base"
+                />
+                <Button
+                  type="submit"
+                  disabled={!textInput.trim()}
+                  className="w-full sm:w-auto"
+                >
+                  Verwerk tekst
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      <div className="pb-4">
-        <h2 className="text-lg font-semibold mb-4">Optie 3: Neem Direct Op</h2>
-        <AudioRecorder onTranscriptionComplete={onTranscriptionComplete} />
+        <TabsContent value="upload">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
+                <input
+                  type="file"
+                  accept="audio/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="audio-upload"
+                />
+                <label 
+                  htmlFor="audio-upload"
+                  className="flex flex-col items-center cursor-pointer"
+                >
+                  <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                  <span className="text-lg font-medium text-gray-900">
+                    Upload een audiobestand
+                  </span>
+                  <span className="text-sm text-gray-500 mt-1">
+                    Sleep een bestand hierheen of klik om te uploaden
+                  </span>
+                </label>
+              </div>
+
+              {isUploading && (
+                <div className="mt-4 flex items-center justify-center text-sm text-gray-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                  Bestand uploaden en transcriberen...
+                </div>
+              )}
+
+              {uploadError && (
+                <div className="mt-4 text-sm text-red-600 text-center">
+                  {uploadError}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="record">
+          <Card>
+            <CardContent className="pt-6">
+              <AudioRecorder onTranscriptionComplete={onTranscriptionComplete} />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </div>
-    </div>
+    </Tabs>
   );
 }
